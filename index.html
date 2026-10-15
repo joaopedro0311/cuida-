@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cuida+: app de emergência</title>
+<style>
+:root{--bg:#fff;--surface:#fdf3f2;--text:#1d1b1b;--muted:#6b6262;--red:#d62828;--red-d:#a71d1d;--line:#f0d6d4;--card:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171212;--surface:#221a1a;--text:#f5eeee;--muted:#b3a6a6;--red:#ef4b4b;--red-d:#ff7a7a;--line:#3a2b2b;--card:#1d1616}}
+:root[data-theme="dark"]{--bg:#171212;--surface:#221a1a;--text:#f5eeee;--muted:#b3a6a6;--red:#ef4b4b;--red-d:#ff7a7a;--line:#3a2b2b;--card:#1d1616}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding:24px 20px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:center;padding:32px 0}
+.tag{display:inline-block;background:var(--surface);color:var(--red-d);border:1px solid var(--line);border-radius:99px;padding:4px 12px;font-size:.85rem;font-weight:600}
+h1{font-size:clamp(2rem,6vw,3.2rem);line-height:1.1;margin:14px 0 12px}
+h1 span{color:var(--red)}
+h2{font-size:1.5rem;margin:40px 0 16px}
+p{margin:0 0 12px}
+.muted{color:var(--muted)}
+.btn{display:inline-block;background:var(--red);color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:700;font-size:1rem;cursor:pointer}
+.phone{width:260px;max-width:100%;margin:0 auto;background:#111;border-radius:36px;padding:10px;box-shadow:0 12px 32px rgba(0,0,0,.25)}
+.screen{background:var(--card);border-radius:28px;min-height:420px;padding:18px 14px;color:var(--text)}
+.screen h3{margin:0 0 10px;font-size:1.05rem;color:var(--red)}
+.row{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding:7px 0;font-size:.85rem}
+.row b{color:var(--muted);font-weight:600}
+.sos{display:block;width:100%;margin-top:14px;background:var(--red);color:#fff;border:0;border-radius:14px;padding:16px;font-size:1.1rem;font-weight:800;cursor:pointer}
+.tabs{display:flex;gap:6px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.tabs button{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:99px;padding:6px 12px;font-size:.8rem;cursor:pointer}
+.tabs button.on{background:var(--red);color:#fff;border-color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.card .n{display:inline-flex;width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;margin-bottom:8px}
+.card h3{margin:0 0 6px;font-size:1.05rem}
+.card p{margin:0;color:var(--muted);font-size:.95rem}
+ul.ok{padding-left:20px;margin:0}
+ul.ok li{margin-bottom:6px}
+.pals{display:flex;gap:10px;flex-wrap:wrap}
+.sw{display:flex;align-items:center;gap:8px;font-size:.9rem}
+.sw i{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);display:inline-block}
+.dash{display:grid;grid-template-columns:200px 1fr;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+.eld{display:flex;flex-direction:column;gap:8px}
+.eld button{display:flex;align-items:center;gap:8px;text-align:left;background:var(--card);color:var(--text);border:2px solid var(--line);border-radius:12px;padding:10px;font-size:.95rem;cursor:pointer}
+.eld button.on{border-color:var(--red)}
+.dot{width:10px;height:10px;border-radius:50%;background:#2e9e5b;flex:none}
+.dot.al{background:var(--red)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.panel h3{margin:0 0 8px;font-size:1.1rem}
+.alert{background:var(--red);color:#fff;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-weight:600;font-size:.9rem}
+.okb{background:#e3f4ea;color:#17613a;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-weight:600;font-size:.9rem}
+.mini{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:3px 10px;font-size:.8rem;cursor:pointer}
+.acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+@media (max-width:720px){.dash{grid-template-columns:1fr}.eld{flex-direction:row;flex-wrap:wrap}}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.fcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.fcard h3{margin:0 0 4px;font-size:1.05rem}
+.fcard>p{color:var(--muted);font-size:.9rem;margin:0 0 10px}
+select{width:100%;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px;font-size:.95rem;margin-bottom:10px}
+.fcard ol{margin:0;padding-left:20px;font-size:.92rem}
+.fcard ol li{margin-bottom:5px}
+.note{font-size:.8rem;color:var(--muted);margin-top:8px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:8px;font-size:.9rem}
+.item small{display:block;color:var(--muted)}
+.item label{display:flex;gap:6px;align-items:center;margin-top:6px;font-size:.85rem;cursor:pointer}
+.chip{font-size:.75rem;font-weight:700;border-radius:99px;padding:2px 9px;background:#e3f4ea;color:#17613a}
+.chip.p{background:#fdeacc;color:#7a4a00}
+.vrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.big{width:100%;background:#2e9e5b;color:#fff;border:0;border-radius:14px;padding:18px;font-size:1.2rem;font-weight:800;cursor:pointer}
+.big.done{background:var(--surface);color:var(--text);border:1px solid var(--line)}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.ct{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px}
+.av{width:48px;height:48px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;flex:none}
+.av.em{background:#111;border:2px solid var(--red)}
+.ct .i{flex:1;min-width:0}
+.ct .i b{display:block;font-size:1.05rem}
+.ct .i small{color:var(--muted)}
+a.call{background:var(--red);color:#fff;text-decoration:none;border-radius:12px;padding:12px 16px;font-weight:800;font-size:1rem;white-space:nowrap}
+.addc{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.addc input{flex:1;min-width:140px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:.95rem}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+.hidden{display:none}
+@media (max-width:720px){.hero{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <span class="tag">App de emergência e saúde</span>
+      <h1>Informação certa, <span>na hora certa</span>.</h1>
+      <p class="muted">O <b>Cuida+</b> reúne em um só lugar o que um socorrista ou médico precisa saber nos primeiros minutos de uma emergência: doenças crônicas, alergias, remédios e contatos.</p>
+      <p><b>Para quem é:</b> pessoas com diabetes, hipertensão, epilepsia, asma, alergias graves ou medicação contínua, além de idosos e seus familiares.</p>
+    </div>
+    <div>
+      <div class="phone">
+        <div class="screen" id="screen"></div>
+      </div>
+      <div class="tabs" id="tabs"></div>
+    </div>
+  </section>
+
+  <h2>Telas principais</h2>
+  <div class="grid">
+    <div class="card"><div class="n">1</div><h3>Ficha de emergência</h3><p>Tipo sanguíneo, doenças crônicas, alergias, remédios de uso contínuo com doses e observações importantes.</p></div>
+    <div class="card"><div class="n">2</div><h3>Contatos de emergência</h3><p>Familiares e médico de confiança, com ligação em um toque.</p></div>
+    <div class="card"><div class="n">3</div><h3>Botão SOS</h3><p>Liga para o SAMU (192) e envia a localização em tempo real aos contatos cadastrados.</p></div>
+    <div class="card"><div class="n">4</div><h3>Acesso na tela de bloqueio</h3><p>Quem socorre vê a ficha sem desbloquear o celular. Dados sensíveis, como CPF, ficam de fora.</p></div>
+    <div class="card"><div class="n">5</div><h3>Lembretes de medicação</h3><p>Avisa a hora de cada remédio e registra se foi tomado.</p></div>
+    <div class="card"><div class="n">6</div><h3>Histórico de crises</h3><p>O usuário anota data, sintomas e o que ajudou, para mostrar ao médico depois.</p></div>
+  </div>
+
+  <h2>Contatos para ligar</h2>
+  <p class="muted">Lista grande e simples para o idoso ligar com um toque quando precisar. Os números de emergência ficam sempre no fim da lista.</p>
+  <div class="ctl" id="ctList"></div>
+  <div class="addc"><input id="ctName" placeholder="Nome (ex.: Vizinha Rita)"><input id="ctTel" type="tel" placeholder="Telefone com DDD"><button class="btn" id="ctAdd">Adicionar</button></div>
+  <p class="note" id="ctMsg">Os números de exemplo são fictícios. No celular, o botão Ligar abre a chamada.</p>
+
+  <h2>Mais funcionalidades</h2>
+  <div class="fgrid">
+    <div class="fcard"><h3>🩹 Guia de primeiros socorros</h3><p>Passo a passo curto, de acordo com a condição do usuário.</p>
+      <select id="faSel"></select><ol id="faOut"></ol>
+      <div class="note">Não substitui a orientação do SAMU. Na dúvida, ligue 192.</div></div>
+    <div class="fcard"><h3>⚠️ Alerta de interação</h3><p>Ao cadastrar um remédio novo, o app avisa sobre possíveis problemas. Em uso: Insulina e Losartana.</p>
+      <select id="ixSel"><option value="">Escolha o novo remédio...</option><option value="ibu">Ibuprofeno</option><option value="vit">Vitamina D</option></select><div id="ixOut"></div>
+      <div class="note">Exemplo ilustrativo. Sempre confirme com médico ou farmacêutico.</div></div>
+    <div class="fcard"><h3>📅 Consultas e exames</h3><p>Data, local e o que levar, com lembrete.</p><div id="apOut"></div></div>
+    <div class="fcard"><h3>💉 Cartão de vacinas</h3><p>Vacinas em dia e próximas doses.</p><div id="vcOut"></div></div>
+    <div class="fcard"><h3>✅ Check-in diário</h3><p>O idoso toca uma vez por dia. Se esquecer, a família é avisada.</p>
+      <button class="big" id="ckBtn">Estou bem</button><p id="ckMsg" class="note">Sem resposta até as 10:00, avisamos a Ana (filha).</p></div>
+  </div>
+
+  <h2>Painel do cuidador</h2>
+  <p class="muted">Uma segunda interface, pensada para filhos, familiares e cuidadores profissionais que acompanham um ou mais idosos. Clique em um idoso para ver o painel dele.</p>
+  <div class="dash">
+    <div class="eld" id="eld"></div>
+    <div class="panel" id="panel"></div>
+  </div>
+  <div class="grid" style="margin-top:14px">
+    <div class="card"><h3>Alertas em tempo real</h3><p>Queda detectada, check-in esquecido, remédio não tomado ou botão SOS acionado.</p></div>
+    <div class="card"><h3>Vários idosos, uma tela</h3><p>Quem cuida de mais de uma pessoa vê todos em uma lista, com cor de status.</p></div>
+    <div class="card"><h3>Agenda e diário de cuidados</h3><p>Consultas, exames e anotações do dia (pressão, humor, alimentação), compartilhadas entre os cuidadores.</p></div>
+    <div class="card"><h3>Permissão do idoso</h3><p>O idoso (ou responsável legal) autoriza quem pode ver cada informação e pode revogar a qualquer momento.</p></div>
+  </div>
+
+  <h2>Diferenciais</h2>
+  <div class="grid">
+    <div class="card"><h3>Funciona offline</h3><p>Emergência não espera sinal de internet.</p></div>
+    <div class="card"><h3>QR Code</h3><p>Para colar na capinha ou na carteira: quem escanear vê a ficha.</p></div>
+    <div class="card"><h3>Modo familiar</h3><p>O cuidador acompanha os dados de um idoso ou criança.</p></div>
+    <div class="card"><h3>Hospital mais próximo</h3><p>Mostra a UPA ou hospital mais perto da localização.</p></div>
+  </div>
+
+  <h2>Cuidados</h2>
+  <ul class="ok">
+    <li>O usuário escolhe quais dados aparecem na tela de bloqueio (privacidade e LGPD).</li>
+    <li>O app não faz diagnóstico: só organiza informações e agiliza o socorro.</li>
+  </ul>
+
+  <h2>Visual</h2>
+  <p class="muted">Vermelho e branco transmitem urgência e clareza. Botões grandes e textos curtos, porque em uma emergência ninguém tem tempo de procurar nada.</p>
+  <div class="pals">
+    <div class="sw"><i style="background:#d62828"></i>Vermelho urgência</div>
+    <div class="sw"><i style="background:#fff"></i>Branco</div>
+    <div class="sw"><i style="background:#a71d1d"></i>Vermelho escuro</div>
+  </div>
+
+  <footer>Cuida+: ideia de aplicativo para o trabalho "Relacione os Apps com a correta descrição".</footer>
+</div>
+
+<script>
+var screens=[
+{n:"Ficha",h:'<h3>🆘 Ficha de emergência</h3><div class="row"><b>Nome</b><span>Maria Souza</span></div><div class="row"><b>Sangue</b><span>O+</span></div><div class="row"><b>Doenças</b><span>Diabetes tipo 1</span></div><div class="row"><b>Alergias</b><span>Dipirona, amendoim</span></div><div class="row"><b>Remédios</b><span>Insulina</span></div><div class="row"><b>Aviso</b><span>Pode desmaiar por hipoglicemia</span></div>'},
+{n:"Contatos",h:function(){return '<h3>📞 Contatos</h3>'+contacts.map(function(c){return '<div class="row"><b>'+esc(c.n)+'</b><a href="tel:'+tel(c.t)+'" style="color:var(--red);font-weight:700">Ligar</a></div>'}).join("")}},
+{n:"SOS",h:'<h3>🚨 Botão SOS</h3><p style="font-size:.85rem" class="muted">Liga para o SAMU e envia sua localização aos contatos.</p><button class="sos" id="sosBtn">SOS</button><p id="sosMsg" style="font-size:.85rem;margin-top:10px"></p>'},
+{n:"Remédios",h:'<h3>💊 Lembretes</h3><div class="row"><b>08:00 Insulina</b><span>✔ tomado</span></div><div class="row"><b>14:00 Metformina</b><span>pendente</span></div><div class="row"><b>20:00 Insulina</b><span>pendente</span></div>'}
+];
+var scr=document.getElementById("screen"),tabs=document.getElementById("tabs");
+function show(i){
+  scr.innerHTML=typeof screens[i].h==="function"?screens[i].h():screens[i].h;
+  Array.prototype.forEach.call(tabs.children,function(b,j){b.className=j===i?"on":""});
+  var s=document.getElementById("sosBtn");
+  if(s)s.onclick=function(){document.getElementById("sosMsg").textContent="Simulação: ligando para o 192 e enviando localização aos contatos..."};
+}
+screens.forEach(function(s,i){var b=document.createElement("button");b.textContent=s.n;b.onclick=function(){show(i)};tabs.appendChild(b)});
+show(0);
+var elders=[
+{n:"Dona Maria, 78",al:"",ck:"Hoje, 08:12 ✔",loc:"Em casa",meds:[["08:00 Insulina",1],["14:00 Losartana",0]]},
+{n:"Seu José, 84",al:"Queda detectada às 09:40 e sem resposta ao check-in.",ck:"Sem resposta desde ontem, 20:00",loc:"Em casa",meds:[["08:00 Metformina",0],["20:00 Metformina",0]]}
+];
+var cur=0,eld=document.getElementById("eld"),panel=document.getElementById("panel");
+function drawEld(){
+  eld.innerHTML="";
+  elders.forEach(function(e,i){
+    var b=document.createElement("button");
+    b.className=i===cur?"on":"";
+    b.innerHTML='<span class="dot'+(e.al?' al':'')+'"></span>'+e.n;
+    b.onclick=function(){cur=i;drawEld();drawPanel()};
+    eld.appendChild(b);
+  });
+}
+function drawPanel(){
+  var e=elders[cur],h='<h3>'+e.n+'</h3>';
+  h+=e.al?'<div class="alert">⚠ '+e.al+'</div>':'<div class="okb">✔ Tudo certo por enquanto</div>';
+  h+='<div class="row"><b>Último check-in</b><span>'+e.ck+'</span></div>';
+  h+='<div class="row"><b>Localização</b><span>'+e.loc+'</span></div>';
+  e.meds.forEach(function(m,i){
+    h+='<div class="row"><b>'+m[0]+'</b><span>'+(m[1]?'✔ tomado':'<button class="mini" data-i="'+i+'">marcar como tomado</button>')+'</span></div>';
+  });
+  h+='<div class="acts"><button class="btn" id="callBtn">Ligar</button><button class="mini" id="samuBtn">Chamar SAMU (192)</button></div><p id="dMsg" style="font-size:.85rem;margin:10px 0 0" class="muted"></p>';
+  panel.innerHTML=h;
+  Array.prototype.forEach.call(panel.querySelectorAll("[data-i]"),function(b){
+    b.onclick=function(){e.meds[b.getAttribute("data-i")][1]=1;drawPanel()};
+  });
+  document.getElementById("callBtn").onclick=function(){document.getElementById("dMsg").textContent="Simulação: ligando para "+e.n.split(",")[0]+"..."};
+  document.getElementById("samuBtn").onclick=function(){document.getElementById("dMsg").textContent="Simulação: chamando o SAMU com a ficha e a localização de "+e.n.split(",")[0]+"."};
+}
+drawEld();drawPanel();
+var guides={
+ hipo:["Hipoglicemia (glicose baixa)",["Se a pessoa está consciente: dê cerca de 15 g de açúcar de ação rápida (meio copo de suco ou 1 colher de sopa de açúcar).","Espere 15 minutos e confira a glicemia, se tiver o aparelho.","Se não melhorar, repita e ligue 192.","Se desmaiar: não dê nada pela boca, deite de lado e ligue 192."]],
+ conv:["Convulsão",["Afaste objetos que possam machucar e proteja a cabeça com algo macio.","Não segure a pessoa e não coloque nada na boca.","Marque o tempo. Se passar de 5 minutos, ligue 192.","Quando parar, deite a pessoa de lado e fique com ela até acordar."]],
+ asma:["Crise de asma",["Sente a pessoa, com o tronco reto, e mantenha a calma.","Ajude a usar a bombinha de resgate como o médico indicou.","Afrouxe roupas apertadas e leve para um local arejado.","Se não melhorar ou houver lábios arroxeados, ligue 192."]],
+ alerg:["Reação alérgica grave",["Ligue 192 imediatamente.","Se a pessoa tem caneta de adrenalina prescrita, ajude a aplicar.","Deite com as pernas elevadas. Se houver falta de ar, deixe sentada.","Fique ao lado até a chegada do socorro."]]
+};
+var fs=document.getElementById("faSel"),fo=document.getElementById("faOut");
+Object.keys(guides).forEach(function(k){var o=document.createElement("option");o.value=k;o.textContent=guides[k][0];fs.appendChild(o)});
+function drawFa(){fo.innerHTML=guides[fs.value][1].map(function(s){return "<li>"+s+"</li>"}).join("")}
+fs.onchange=drawFa;drawFa();
+var ixRes={
+ "":"",
+ ibu:'<div class="alert">⚠ Possível interação com Losartana: anti-inflamatórios podem reduzir o efeito do remédio de pressão e afetar os rins. Converse com seu médico antes de usar.</div>',
+ vit:'<div class="okb">✔ Nenhuma interação encontrada neste exemplo.</div>'
+};
+document.getElementById("ixSel").onchange=function(){document.getElementById("ixOut").innerHTML=ixRes[this.value]};
+var aps=[["Cardiologista","22/10, 14:30 · Clínica Vida","Levar: exames de sangue e lista de remédios"],["Glicemia em jejum","28/10, 07:30 · Laboratório Central","Jejum de 8 horas"]];
+document.getElementById("apOut").innerHTML=aps.map(function(a,i){return '<div class="item"><b>'+a[0]+'</b><small>'+a[1]+'</small><small>'+a[2]+'</small><label><input type="checkbox" data-ap="'+i+'" checked> Lembrar 1 dia antes</label></div>'}).join("");
+var vcs=[["Gripe (anual)",1],["Pneumocócica",1],["dT (reforço a cada 10 anos)",0],["COVID-19 (reforço)",0]];
+function drawVc(){document.getElementById("vcOut").innerHTML=vcs.map(function(v,i){return '<div class="vrow"><span>'+v[0]+'</span>'+(v[1]?'<span class="chip">Em dia</span>':'<button class="mini" data-vc="'+i+'">Marcar aplicada</button>')+'</div>'}).join("");
+ Array.prototype.forEach.call(document.querySelectorAll("[data-vc]"),function(b){b.onclick=function(){vcs[b.getAttribute("data-vc")][1]=1;drawVc()}})}
+drawVc();
+document.getElementById("ckBtn").onclick=function(){
+ var t=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+ this.textContent="✔ Check-in feito às "+t;this.className="big done";
+ document.getElementById("ckMsg").textContent="A Ana foi avisada de que você está bem.";
+ elders[0].ck="Hoje, "+t+" ✔";if(cur===0)drawPanel();
+};
+var contacts=[
+{n:"Ana",r:"Filha",t:"(00) 90000-0001"},
+{n:"João",r:"Marido",t:"(00) 90000-0002"},
+{n:"Dra. Lúcia",r:"Médica",t:"(00) 3000-0003"},
+{n:"SAMU",r:"Emergência",t:"192",em:1},
+{n:"Bombeiros",r:"Emergência",t:"193",em:1}
+];
+function esc(x){var d=document.createElement("div");d.textContent=x;return d.innerHTML}
+function tel(x){return x.replace(/[^0-9+]/g,"")}
+function drawCt(){
+  var list=contacts.filter(function(c){return !c.em}).concat(contacts.filter(function(c){return c.em}));
+  document.getElementById("ctList").innerHTML=list.map(function(c){
+    return '<div class="ct"><div class="av'+(c.em?' em':'')+'">'+esc(c.n.charAt(0))+'</div><div class="i"><b>'+esc(c.n)+'</b><small>'+esc(c.r)+' · '+esc(c.t)+'</small></div><a class="call" href="tel:'+tel(c.t)+'">📞 Ligar</a></div>';
+  }).join("");
+}
+document.getElementById("ctAdd").onclick=function(){
+  var n=document.getElementById("ctName").value.trim(),t=document.getElementById("ctTel").value.trim();
+  if(!n||tel(t).length<8){document.getElementById("ctMsg").textContent="Preencha o nome e um telefone válido.";return}
+  contacts.splice(contacts.length-2,0,{n:n,r:"Contato",t:t});
+  document.getElementById("ctName").value="";document.getElementById("ctTel").value="";
+  document.getElementById("ctMsg").textContent="Contato adicionado: "+n+".";
+  drawCt();
+};
+drawCt();
+</script>
+</body>
+</html>
