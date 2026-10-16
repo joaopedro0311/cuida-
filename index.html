@@ -79,6 +79,16 @@ select{width:100%;background:var(--card);color:var(--text);border:1px solid var(
 a.call{background:var(--red);color:#fff;text-decoration:none;border-radius:12px;padding:12px 16px;font-weight:800;font-size:1rem;white-space:nowrap}
 .addc{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .addc input{flex:1;min-width:140px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;font-size:.95rem}
+.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--red)}
+.big3{border:0;border-radius:16px;padding:20px;font-size:1.3rem;font-weight:800;color:#fff;background:var(--red);cursor:pointer}
+.fence{position:relative;height:200px;background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:10px 0;overflow:hidden}
+.fz{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:3px dashed var(--red);border-radius:50%;background:rgba(214,40,40,.08);display:flex;align-items:flex-start;justify-content:center;font-size:.7rem;color:var(--red)}
+.dotp{position:absolute;width:16px;height:16px;border-radius:50%;background:#1f6feb;border:2px solid #fff;transform:translate(-50%,-50%)}
+.bpm{font-size:3rem;font-weight:800;color:var(--red);line-height:1}
+.bdg{display:inline-block;margin:4px;padding:8px 12px;border-radius:99px;background:var(--surface);border:1px solid var(--line);font-weight:700;font-size:.9rem}
+.bdg.lk{opacity:.4;filter:grayscale(1)}
+.cgrid td,.cgrid th{padding:6px;text-align:center;font-size:.85rem;border-bottom:1px solid var(--line)}
 footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
 .hidden{display:none}
 @media (max-width:720px){.hero{grid-template-columns:1fr}}
@@ -143,6 +153,11 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);font-si
     <div class="card"><h3>Agenda e diário de cuidados</h3><p>Consultas, exames e anotações do dia (pressão, humor, alimentação), compartilhadas entre os cuidadores.</p></div>
     <div class="card"><h3>Permissão do idoso</h3><p>O idoso (ou responsável legal) autoriza quem pode ver cada informação e pode revogar a qualquer momento.</p></div>
   </div>
+
+  <h2>Novas funcionalidades</h2>
+  <p class="muted">Toque em cada aba para experimentar. Tudo funciona como demonstração.</p>
+  <div class="tabs" id="nfTabs" style="justify-content:flex-start"></div>
+  <div class="panel" id="nfPanel" style="margin-top:12px"></div>
 
   <h2>Diferenciais</h2>
   <div class="grid">
@@ -269,6 +284,63 @@ document.getElementById("ctAdd").onclick=function(){
   drawCt();
 };
 drawCt();
+var nf={tab:0,msg:"",lg:0,ck:0,ex:0,wt:0,fo:1,fr:300,out:0,bpm:72,note:"",
+ rt:[["08:00 · Beber água",0],["09:30 · Caminhar 15 minutos",0],["12:00 · Almoçar",0],["14:00 · Tomar o remédio",0]],
+ ml:[["Café da manhã",0],["Almoço",0],["Lanche",0],["Jantar",0]],
+ net:[["Ana (filha)",1],["Vizinha Rita",1],["Sr. Paulo (amigo)",0]],
+ pe:["Ana","João","Sônia"],sc:[0,1,0,1,2,1,0,2,0,2,2,1,0,0]};
+var days=["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"];
+function chk(a,i,on,t){return '<label style="display:flex;gap:8px;align-items:center;padding:6px 0"><input type="checkbox" data-a="'+a+'" data-i="'+i+'"'+(on?' checked':'')+'> '+t+'</label>'}
+function box(c,t){return '<div class="'+c+'" style="margin-top:10px">'+t+'</div>'}
+var nfT=[
+["Modo simples",()=>`<p class="muted" style="margin:0 0 10px">Tela com só 3 botões grandes, para quem tem dificuldade com tecnologia.</p><div style="display:grid;gap:10px;max-width:360px"><button class="big3" data-a="s" data-i="0" style="background:#2e9e5b">📞 Ligar para alguém</button><button class="big3" data-a="s" data-i="1">🆘 SOS</button><button class="big3" data-a="s" data-i="2" style="background:#1f6feb">✅ Estou bem</button></div><p class="note">${nf.msg}</p>${chk("lg",0,nf.lg,"Letras grandes na página")}`],
+["Rotina do dia",()=>{var d=nf.rt.filter(x=>x[1]).length;return `<div style="display:flex;justify-content:space-between"><b>Hoje</b><span>${d} de ${nf.rt.length} feitas</span></div><div class="bar" style="margin:6px 0 10px"><i style="width:${d/nf.rt.length*100}%"></i></div>${nf.rt.map((x,i)=>chk("rt",i,x[1],x[0])).join("")}<p class="note">Cada item tem um lembrete no horário combinado.</p>`}],
+["Exercícios leves",()=>`${[["Elevar os calcanhares","Segure em uma cadeira, suba na ponta dos pés e desça devagar. 10 vezes."],["Sentar e levantar","Em uma cadeira firme, levante e sente devagar. 8 vezes."],["Alongar os ombros","Sentado, gire os ombros para trás por 30 segundos."]].map(x=>`<div class="item"><b>${x[0]}</b><small>${x[1]}</small></div>`).join("")}<b>Dicas para evitar quedas</b><ul style="margin:6px 0 10px;padding-left:20px;font-size:.92rem"><li>Use tapetes antiderrapantes e tire os soltos.</li><li>Deixe uma luz de vigia no caminho do banheiro.</li><li>Use calçados fechados e firmes.</li><li>Instale barras de apoio no banheiro.</li></ul><button class="btn" data-a="ex">${nf.ex?"✔ Feito hoje":"Concluí os exercícios de hoje"}</button><p class="note">Converse com o médico antes de começar qualquer exercício.</p>`],
+["Hidratação e alimentação",()=>`<b>Água: ${nf.wt} de 8 copos</b><div style="font-size:1.5rem;margin:6px 0">${"💧".repeat(nf.wt)}${"◌".repeat(8-nf.wt)}</div><button class="mini" data-a="w" data-i="0">− tirar</button> <button class="mini" data-a="w" data-i="1">+ 1 copo</button><div style="margin:10px 0 2px"><b>Refeições</b></div>${nf.ml.map((x,i)=>chk("ml",i,x[1],x[0])).join("")}${box("okb","💡 Sugestão de lanche: uma fruta com iogurte natural.")}`],
+["Cerca virtual",()=>{var px=nf.fr/500*170;return `${chk("fo",0,nf.fo,"O idoso (ou responsável legal) autorizou o acompanhamento")}<div class="fence"><div class="fz" id="fz" style="width:${px}px;height:${px}px">área segura</div><div class="dotp" style="left:${nf.out?"90%":"50%"};top:${nf.out?"85%":"50%"}"></div></div><label>Raio: <b id="frl">${nf.fr} m</b><input type="range" id="fr" min="100" max="500" step="50" value="${nf.fr}" style="width:100%"></label><div class="acts"><button class="mini" data-a="fs">Simular saída da área</button><button class="mini" data-a="fb">Voltar para casa</button></div>${!nf.fo?box("alert","Sem a permissão, a cerca fica desligada."):nf.out?box("alert","⚠ Seu José saiu da área segura. Avisando o cuidador..."):box("okb","✔ Seu José está dentro da área segura.")}`}],
+["Rede de apoio",()=>`<p class="muted" style="margin:0 0 6px;font-size:.9rem">Escolha quem recebe o alerta de emergência.</p>${nf.net.map((x,i)=>chk("nt",i,x[1],x[0])).join("")}<div class="acts"><button class="btn" data-a="sos">Simular SOS</button></div>${nf.msg?box("alert",nf.msg):""}`],
+["Revezamento",()=>`<p class="muted" style="margin:0 0 6px;font-size:.9rem">Toque em um horário para trocar o cuidador.</p><div style="overflow-x:auto"><table class="cgrid" style="width:100%;border-collapse:collapse"><tr><th></th><th>Manhã</th><th>Noite</th></tr>${days.map((d,i)=>`<tr><td><b>${d}</b></td>${[0,1].map(s=>`<td><button class="mini" data-a="sc" data-i="${i*2+s}">${nf.pe[nf.sc[i*2+s]]}</button></td>`).join("")}</tr>`).join("")}</table></div><div class="addc"><input id="nfNote" placeholder="Nota de passagem de turno"><button class="btn" data-a="nsave">Salvar</button></div>${nf.note?'<div class="item" style="margin-top:10px"><small>Última nota</small>'+esc(nf.note)+'</div>':""}`],
+["Relatório semanal",()=>`${[["Remédios tomados",92,"92%"],["Check-ins feitos",86,"6 de 7 dias"],["Rotina cumprida",71,"71%"]].map(x=>`<div class="row"><b>${x[0]}</b><span>${x[2]}</span></div><div class="bar" style="margin:2px 0 6px"><i style="width:${x[1]}%"></i></div>`).join("")}<div class="row"><b>Humor</b><span>😊 Bom na maior parte dos dias</span></div><div class="row"><b>Crises</b><span>1 (quarta-feira, glicose baixa)</span></div><div class="acts"><button class="btn" data-a="rp">Compartilhar com o médico</button></div>${nf.msg?box("okb",nf.msg):""}<p class="note">Dados de exemplo.</p>`],
+["Smartwatch",()=>`<div class="bpm">${nf.bpm} <small style="font-size:1rem">bpm</small></div><p class="note">Referência para repouso: entre 60 e 100 bpm. Quem avalia é o médico.</p><div class="acts"><button class="mini" data-a="bp" data-i="0">Ler batimentos</button><button class="mini" data-a="bp" data-i="1">Simular alteração</button></div>${nf.bpm>110||nf.bpm<45?box("alert","⚠ Batimentos fora do normal. Avisando a Ana e a rede de apoio."):box("okb","✔ Batimentos dentro do esperado.")}`],
+["Farmácias",()=>`${[["Farmácia 24h Central","Aberta 24 horas · 1,2 km"],["Drogaria Bem Estar","Aberta até 22h · 2,0 km"],["Farmácia da Praça","Aberta até 20h · 3,5 km"]].map(x=>`<div class="item"><b>${x[0]}</b><small>${x[1]}</small></div>`).join("")}<div class="okb">💊 Farmácia Popular: programa do governo que oferece alguns medicamentos de graça ou com desconto, como os de pressão, diabetes e asma. Leve documento com foto, CPF e receita.</div><p class="note">Farmácias e distâncias de exemplo. Confira os medicamentos disponíveis no site do programa.</p>`],
+["Conquistas",()=>{var b=[["📋 Rotina completa",nf.rt.every(x=>x[1])],["💊 Remédio em dia",nf.rt[3][1]],["💧 Hidratado",nf.wt>=8],["🚶 Exercícios feitos",nf.ex],["✅ Check-in feito",nf.ck]];return `<p class="muted" style="margin:0 0 6px;font-size:.9rem">Selos por manter a rotina. Use as outras abas para ganhar.</p><b>${b.filter(x=>x[1]).length} de ${b.length} selos</b><div style="margin-top:6px">${b.map(x=>`<span class="bdg${x[1]?"":" lk"}">${x[0]}</span>`).join("")}</div>`}]
+];
+var nfTabs=document.getElementById("nfTabs"),nfPanel=document.getElementById("nfPanel");
+function nfDraw(){
+ nfTabs.innerHTML=nfT.map((t,i)=>'<button class="'+(i==nf.tab?"on":"")+'" data-t="'+i+'">'+t[0]+'</button>').join("");
+ nfPanel.innerHTML=nfT[nf.tab][1]();
+ document.documentElement.style.fontSize=nf.lg?"125%":"";
+}
+nfTabs.onclick=function(e){var b=e.target.closest("[data-t]");if(b){nf.tab=+b.dataset.t;nf.msg="";nfDraw()}};
+nfPanel.onclick=function(e){
+ var b=e.target.closest("[data-a]");if(!b)return;
+ var a=b.dataset.a,i=+b.dataset.i;
+ if(a=="s"){
+  if(i==0){nf.msg="Abrindo a lista de contatos...";document.getElementById("ctList").scrollIntoView({behavior:"smooth"})}
+  if(i==1)nf.msg="Simulação: ligando para o 192 e avisando os contatos.";
+  if(i==2){nf.msg="Check-in feito. Sua família foi avisada.";nf.ck=1}
+ }
+ else if(a=="lg")nf.lg=nf.lg?0:1;
+ else if(a=="rt")nf.rt[i][1]^=1;
+ else if(a=="ml")nf.ml[i][1]^=1;
+ else if(a=="ex")nf.ex=1;
+ else if(a=="w")nf.wt=Math.max(0,Math.min(8,nf.wt+(i?1:-1)));
+ else if(a=="fo"){nf.fo^=1;if(!nf.fo)nf.out=0}
+ else if(a=="fs"){if(nf.fo)nf.out=1}
+ else if(a=="fb")nf.out=0;
+ else if(a=="nt")nf.net[i][1]^=1;
+ else if(a=="sos"){var n=nf.net.filter(x=>x[1]).map(x=>x[0]);nf.msg=n.length?"🚨 Alerta enviado para: "+n.join(", ")+".":"Escolha ao menos uma pessoa."}
+ else if(a=="sc")nf.sc[i]=(nf.sc[i]+1)%3;
+ else if(a=="nsave")nf.note=document.getElementById("nfNote").value.trim();
+ else if(a=="rp")nf.msg="Relatório enviado para a Dra. Lúcia (simulação).";
+ else if(a=="bp")nf.bpm=i?148:62+Math.floor(Math.random()*27);
+ nfDraw();
+};
+nfPanel.oninput=function(e){
+ if(e.target.id=="fr"){nf.fr=+e.target.value;var px=nf.fr/500*170,z=document.getElementById("fz");z.style.width=z.style.height=px+"px";document.getElementById("frl").textContent=nf.fr+" m"}
+};
+document.getElementById("ckBtn").addEventListener("click",function(){nf.ck=1});
+nfDraw();
 </script>
 </body>
 </html>
